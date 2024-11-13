@@ -1,5 +1,5 @@
 class Item {
-  constructor(name, sellIn, quality){
+  constructor(name, sellIn, quality) {
     this.name = name;
     this.sellIn = sellIn;
     this.quality = quality;
@@ -7,60 +7,68 @@ class Item {
 }
 
 class Shop {
-  constructor(items=[]){
+  constructor(items = []) {
     this.items = items;
   }
+
   updateQuality() {
-    for (var i = 0; i < this.items.length; i++) {
-      if (this.items[i].name != 'Aged Brie' && this.items[i].name != 'Backstage passes to a TAFKAL80ETC concert') {
-        if (this.items[i].quality > 0) {
-          if (this.items[i].name != 'Sulfuras, Hand of Ragnaros') {
-            this.items[i].quality = this.items[i].quality - 1;
-          }
-        }
-      } else {
-        if (this.items[i].quality < 50) {
-          this.items[i].quality = this.items[i].quality + 1;
-          if (this.items[i].name == 'Backstage passes to a TAFKAL80ETC concert') {
-            if (this.items[i].sellIn < 11) {
-              if (this.items[i].quality < 50) {
-                this.items[i].quality = this.items[i].quality + 1;
-              }
-            }
-            if (this.items[i].sellIn < 6) {
-              if (this.items[i].quality < 50) {
-                this.items[i].quality = this.items[i].quality + 1;
-              }
-            }
-          }
-        }
+    this.items.forEach(item => {
+      if (item.name === 'Sulfuras, Hand of Ragnaros') {
+        // "Sulfuras" ne change pas
+        return;
       }
-      if (this.items[i].name != 'Sulfuras, Hand of Ragnaros') {
-        this.items[i].sellIn = this.items[i].sellIn - 1;
+
+      // Déterminer la dégradation ou l'amélioration
+      let qualityChange = this.getQualityChange(item);
+
+      // Appliquer les changements de qualité
+      item.quality = Math.max(0, Math.min(50, item.quality + qualityChange));
+
+      // Réduire sellIn sauf pour "Sulfuras"
+      item.sellIn -= 1;
+
+      // Après péremption, appliquer des règles supplémentaires
+      if (item.sellIn < 0) {
+        this.applyPostExpirationRules(item);
       }
-      if (this.items[i].sellIn < 0) {
-        if (this.items[i].name != 'Aged Brie') {
-          if (this.items[i].name != 'Backstage passes to a TAFKAL80ETC concert') {
-            if (this.items[i].quality > 0) {
-              if (this.items[i].name != 'Sulfuras, Hand of Ragnaros') {
-                this.items[i].quality = this.items[i].quality - 1;
-              }
-            }
-          } else {
-            this.items[i].quality = this.items[i].quality - this.items[i].quality;
-          }
-        } else {
-          if (this.items[i].quality < 50) {
-            this.items[i].quality = this.items[i].quality + 1;
-          }
-        }
-      }
-    }
+    });
 
     return this.items;
   }
+
+  getQualityChange(item) {
+    if (item.name === 'Aged Brie') {
+      return 1; // "Aged Brie" augmente toujours en qualité
+    }
+
+    if (item.name.startsWith('Backstage passes')) {
+      if (item.sellIn <= 5) return 3; // Augmente de 3 si <= 5 jours
+      if (item.sellIn <= 10) return 2; // Augmente de 2 si <= 10 jours
+      return 1; // Sinon augmente de 1
+    }
+
+    if (item.name.startsWith('Conjured')) {
+      return -2; // Les articles "Conjured" se dégradent deux fois plus vite
+    }
+
+    return -1; // Dégradation normale
+  }
+
+  applyPostExpirationRules(item) {
+    if (item.name === 'Aged Brie') {
+      // "Aged Brie" continue d'augmenter après péremption
+      item.quality = Math.min(50, item.quality + 1);
+    } else if (item.name.startsWith('Backstage passes')) {
+      // "Backstage passes" tombent à 0 après péremption
+      item.quality = 0;
+    } else {
+      // Dégradation supplémentaire après péremption
+      item.quality = Math.max(0, item.quality - (item.name.startsWith('Conjured') ? 2 : 1));
+    }
+  }
 }
+
 module.exports = {
   Item,
   Shop
-}
+};
