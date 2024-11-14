@@ -1,53 +1,61 @@
-_Support this and all my katas via [Patreon](https://www.patreon.com/EmilyBache)_
+La Gilded Rose - L'art de gérer du bazar en stock
+Bienvenue à La Gilded Rose, où le désordre règne, mais où le code est bien testé ! Ce projet est une aventure dans l'univers du commerce médiéval, où vous gérez un inventaire rempli de produits magiques (et parfois douteux).
 
-# Gilded Rose Refactoring Kata
+📜 Mission
+Votre tâche, si vous l'acceptez, est de maintenir la qualité (ou l'illusion de qualité) de nos produits magiques tout en respectant les règles strictes de l'inventaire. Ne touchez surtout pas à la classe Item ! Elle est protégée par un gobelin maléfique qui pourrait devenir TRÈS mécontent.
 
-You can find out more about this exercise in my YouTube video [Why Developers LOVE The Gilded Rose Kata](https://youtu.be/Mt4XpGxigT4). I also have a video of a worked solution in Java - [Gilded Rose Kata, Hands-on](https://youtu.be/OdnV8hc9L7I)
+🛠️ Comment ça marche ?
+Chaque nuit, le système :
 
-I use this kata as part of my work as a technical coach. I wrote a lot about the coaching method I use in this book [Technical Agile Coaching with the Samman method](https://leanpub.com/techagilecoach). A while back I wrote this article ["Writing Good Tests for the Gilded Rose Kata"](http://coding-is-like-cooking.info/2013/03/writing-good-tests-for-the-gilded-rose-kata/) about how you could use this kata in a [coding dojo](https://leanpub.com/codingdojohandbook).
+Réduit le nombre de jours restants pour vendre chaque article (sellIn).
+Ajuste la quality des articles, en appliquant des règles très logiques* :
+Normal : Qualité -1 (ou -2 après péremption).
+Aged Brie : Plus vieux, plus délicieux ! +1 de qualité (maximum 50).
+Backstage passes : Une hype qui monte (+2 ou +3), mais chute libre après l'événement (qualité = 0).
+Sulfuras : La classe. Toujours 80 de qualité, quoi qu'il arrive.
+Conjured : "Double dégradation", parce que la magie, ça s'use vite.
+* Si vous trouvez ça logique, contactez-nous. On vous embauche.
+🚀 Comment lancer ce joyau ?
+Pré-requis
+Node.js et pnpm, parce que le code médiéval mérite des outils modernes.
+Étapes
+Clonez le repo :
+git clone https://github.com/your-username/gilded-rose.git
+cd gilded-rose
+Installez les dépendances :
+pnpm install
+Exécutez les tests :
+pnpm test
+Regardez le chaos se dérouler :
+node texttest_fixture.js 10
+💻 Le code
+Le code est structuré comme suit :
 
+Fichiers principaux
+src/gilded_rose.js : Où toute la "magie" opère.
+spec/gilded_rose_spec.js : La vérité absolue, où chaque règle est testée.
+texttest_fixture.js : Pour les nostalgiques des logs console. C'est comme lire un journal intime.
+😱 Ce qu'il NE faut PAS faire
+Modifier la classe Item. Sérieusement, le gobelin ne plaisante pas.
+Ignorer les règles métier :
+Pas de qualité au-dessus de 50 (sauf "Sulfuras").
+Pas de qualité en-dessous de 0 (même pour les "Conjured").
+Essayer de comprendre pourquoi "Backstage passes" est si compliqué. Ce n'est pas censé avoir du sens.
+🏆 Les tests passent
+Oui, tout fonctionne ! Nos 18 tests couvrent :
 
-## How to use this Kata
+Les articles normaux (basiques mais nécessaires).
+"Aged Brie" et son vieillissement comme un bon vin.
+"Backstage passes" et leur chute spectaculaire.
+"Sulfuras", fidèle à lui-même.
+Les articles "Conjured", qui partent en poussière plus vite que la normale.
+🐛 Bugs ?
+Si vous trouvez un bug :
 
-The simplest way is to just clone the code and start hacking away improving the design. You'll want to look at the ["Gilded Rose Requirements"](https://github.com/emilybache/GildedRose-Refactoring-Kata/blob/main/GildedRoseRequirements.md) which explains what the code is for. I strongly advise you that you'll also need some tests if you want to make sure you don't break the code while you refactor.
+Blâmez Leeroy. C'est lui qui a écrit la première version.
+Ouvrez un ticket ou corrigez-le vous-même. On ne mord pas (promis).
+🎉 Merci !
+Un grand merci à vous, aventurier du code, pour avoir accepté cette mission. Vous avez maintenant une maîtrise avancée de l'art de la gestion d'inventaire magique. Et rappelez-vous : le code peut toujours être plus horrible !
 
-You could write some unit tests yourself, using the requirements to identify suitable test cases. I've provided a failing unit test in a popular test framework as a starting point for most languages.
-
-Alternatively, use the Approval tests provided in this repository. (Read more about that in the section "Text-based Approval Testing").
-
-The idea of the exercise is to do some deliberate practice, and improve your skills at designing test cases and refactoring. The idea is not to re-write the code from scratch, but rather to practice taking small steps, running the tests often, and incrementally improving the design. 
-
-### Gilded Rose Requirements in other languages 
-
-- [English](GildedRoseRequirements.md)
-- [Español](GildedRoseRequirements_es.md)
-- [Français](GildedRoseRequirements_fr.md)
-- [Italiano](GildedRoseRequirements_it.md)
-- [日本語](GildedRoseRequirements_jp.md)
-- [Português](GildedRoseRequirements_pt-BR.md)
-- [Русский](GildedRoseRequirements_ru.md)
-- [ไทย](GildedRoseRequirements_th.md)
-- [中文](GildedRoseRequirements_zh.txt)
-- [한국어](GildedRoseRequirements_kr.md)
-- [German](GildedRoseRequirements_de.md)
-- [Euskara](GildedRoseRequirements_eu.md)
-
-## Text-Based Approval Testing
-
-Most language versions of this code have a [TextTest](https://texttest.org) fixture for Approval testing. For information about this, see the [TextTests README](https://github.com/emilybache/GildedRose-Refactoring-Kata/tree/main/texttests)
-
-## History of the exercise
-
-This Kata was originally created by Terry Hughes (http://twitter.com/TerryHughes). It is already on GitHub [here](https://github.com/NotMyself/GildedRose). See also [Bobby Johnson's description of the kata](https://iamnotmyself.com/refactor-this-the-gilded-rose-kata/).
-
-I translated the original C# into a few other languages, (with a little help from my friends!), and slightly changed the starting position. This means I've actually done a small amount of refactoring already compared with the original form of the kata, and made it easier to get going with writing tests by giving you one failing unit test to start with. I also added test fixtures for Text-Based approval testing with TextTest (see [the TextTests](https://github.com/emilybache/GildedRose-Refactoring-Kata/tree/main/texttests))
-
-As Bobby Johnson points out in his article ["Why Most Solutions to Gilded Rose Miss The Bigger Picture"](https://iamnotmyself.com/why-most-solutions-to-gilded-rose-miss-the-bigger-picture/), it'll actually give you
-better practice at handling a legacy code situation if you do this Kata in the original C#. However, I think this kata
-is also really useful for practicing writing good tests using different frameworks and approaches, and the small changes I've made help with that. I think it's also interesting to compare what the refactored code and tests look like in different programming languages.
-
-## Contributing
-
-Contributions are encouraged! You could add a translations of the specification
-in another language or a new starting point for your favorite programming
-language. Please see [CONTRIBUTING.md](./CONTRIBUTING.md) for more details.
+Avec amour (et beaucoup de expect),
+La Gilded Rose Dev Team
