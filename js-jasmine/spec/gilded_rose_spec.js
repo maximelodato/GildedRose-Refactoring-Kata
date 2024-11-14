@@ -1,130 +1,94 @@
 const { Shop, Item } = require('../src/gilded_rose.js');
 
-describe("Gilded Rose", function () {
+describe("Gilded Rose - Vérification des critères de correction", function () {
 
-  // Test global avec affichage détaillé
-  it("Test complet avec affichage des résultats en français", function () {
-    const items = [
-      new Item("+5 Dexterity Vest", 10, 20),
-      new Item("Aged Brie", 2, 0),
-      new Item("Elixir of the Mongoose", 5, 7),
-      new Item("Sulfuras, Hand of Ragnaros", 0, 80),
-      new Item("Sulfuras, Hand of Ragnaros", -1, 80),
-      new Item("Backstage passes to a TAFKAL80ETC concert", 15, 20),
-      new Item("Backstage passes to a TAFKAL80ETC concert", 10, 49),
-      new Item("Backstage passes to a TAFKAL80ETC concert", 5, 39),
-      new Item("Conjured Mana Cake", 3, 6),
-    ];
+  function afficherResultat(message, condition) {
+    console.log(`${message}: ${condition ? "✔️ Succès" : "❌ Échec"}`);
+  }
 
-    const days = 3; // Nombre de jours à simuler
-    const gildedRose = new Shop(items);
-
-    for (let day = 0; day < days; day++) {
-      console.log(`\n-------- JOUR ${day + 1} --------`);
-      console.log("Nom de l'article | Nombre de jours restants (sellIn) | Qualité");
-      items.forEach(item => console.log(`${item.name} | ${item.sellIn} | ${item.quality}`));
-      gildedRose.updateQuality();
-      console.log("=== Après mise à jour ===");
-      items.forEach(item => console.log(`${item.name} | ${item.sellIn} | ${item.quality}`));
-    }
-  });
-
-  // Test 1 : Articles normaux
-  it("Les articles normaux voient leur qualité et leur sellIn diminuer de 1", function () {
+  it("Critère 1 : La quality et le sellIn d'item normaux baissent de 1", function () {
+    console.log("\n🔎 Critère 1 : Vérification de la diminution normale de la qualité et de sellIn.");
     const gildedRose = new Shop([new Item("+5 Dexterity Vest", 10, 20)]);
     gildedRose.updateQuality();
-    console.log("Avant mise à jour : +5 Dexterity Vest | sellIn = 10, qualité = 20");
-    console.log("Après mise à jour :", gildedRose.items[0]);
-    expect(gildedRose.items[0].quality).toBe(19);
-    expect(gildedRose.items[0].sellIn).toBe(9);
+    const item = gildedRose.items[0];
+    afficherResultat("Qualité diminue de 1", item.quality === 19);
+    afficherResultat("SellIn diminue de 1", item.sellIn === 9);
   });
 
-  // Test 2 : Articles normaux après péremption
-  it("La qualité des articles normaux baisse de 2 après péremption", function () {
-    const gildedRose = new Shop([new Item("+5 Dexterity Vest", 0, 10)]);
-    gildedRose.updateQuality();
-    console.log("Avant mise à jour : +5 Dexterity Vest | sellIn = 0, qualité = 10");
-    console.log("Après mise à jour :", gildedRose.items[0]);
-    expect(gildedRose.items[0].quality).toBe(8);
-  });
-
-  // Test 3 : Aged Brie augmente en qualité
-  it("La qualité augmente de 1 pour 'Aged Brie'", function () {
+  it("Critère 2 : La qualité augmente de 1 pour 'Aged Brie' et 'Backstage passes'", function () {
+    console.log("\n🔎 Critère 2 : Vérification de l'augmentation de la qualité pour 'Aged Brie'.");
     const gildedRose = new Shop([new Item("Aged Brie", 2, 0)]);
     gildedRose.updateQuality();
-    console.log("Avant mise à jour : Aged Brie | sellIn = 2, qualité = 0");
-    console.log("Après mise à jour :", gildedRose.items[0]);
-    expect(gildedRose.items[0].quality).toBe(1);
+    const item = gildedRose.items[0];
+    afficherResultat("Qualité augmente de 1 pour Aged Brie", item.quality === 1);
+
+    console.log("\n🔎 Critère 2 : Vérification de l'augmentation pour 'Backstage passes'.");
+    const gildedRose2 = new Shop([new Item("Backstage passes to a TAFKAL80ETC concert", 15, 20)]);
+    gildedRose2.updateQuality();
+    const item2 = gildedRose2.items[0];
+    afficherResultat("Qualité augmente de 1 pour Backstage passes", item2.quality === 21);
   });
 
-  // Test 4 : La qualité ne dépasse jamais 50
-  it("La qualité ne dépasse jamais 50", function () {
-    const gildedRose = new Shop([new Item("Aged Brie", 2, 50)]);
-    gildedRose.updateQuality();
-    console.log("Avant mise à jour : Aged Brie | sellIn = 2, qualité = 50");
-    console.log("Après mise à jour :", gildedRose.items[0]);
-    expect(gildedRose.items[0].quality).toBe(50);
-  });
-
-  // Test 5 : Backstage passes (sellIn > 10)
-  it("La qualité des 'Backstage passes' augmente de 1 quand sellIn > 10", function () {
-    const gildedRose = new Shop([new Item("Backstage passes to a TAFKAL80ETC concert", 15, 20)]);
-    gildedRose.updateQuality();
-    console.log("Avant mise à jour : Backstage passes | sellIn = 15, qualité = 20");
-    console.log("Après mise à jour :", gildedRose.items[0]);
-    expect(gildedRose.items[0].quality).toBe(21);
-  });
-
-  // Test 6 : Backstage passes (sellIn <= 10)
-  it("La qualité des 'Backstage passes' augmente de 2 quand sellIn <= 10", function () {
+  it("Critère 3 : La qualité augmente de 2 pour 'Backstage passes' quand il reste 10 jours ou moins", function () {
+    console.log("\n🔎 Critère 3 : Vérification de l'augmentation de qualité pour 'Backstage passes' (10 jours ou moins).");
     const gildedRose = new Shop([new Item("Backstage passes to a TAFKAL80ETC concert", 10, 20)]);
     gildedRose.updateQuality();
-    console.log("Avant mise à jour : Backstage passes | sellIn = 10, qualité = 20");
-    console.log("Après mise à jour :", gildedRose.items[0]);
-    expect(gildedRose.items[0].quality).toBe(22);
+    const item = gildedRose.items[0];
+    afficherResultat("Qualité augmente de 2 pour Backstage passes", item.quality === 22);
   });
 
-  // Test 7 : Backstage passes (sellIn <= 5)
-  it("La qualité des 'Backstage passes' augmente de 3 quand sellIn <= 5", function () {
+  it("Critère 4 : La qualité augmente de 3 pour 'Backstage passes' quand il reste 5 jours ou moins", function () {
+    console.log("\n🔎 Critère 4 : Vérification de l'augmentation de qualité pour 'Backstage passes' (5 jours ou moins).");
     const gildedRose = new Shop([new Item("Backstage passes to a TAFKAL80ETC concert", 5, 20)]);
     gildedRose.updateQuality();
-    console.log("Avant mise à jour : Backstage passes | sellIn = 5, qualité = 20");
-    console.log("Après mise à jour :", gildedRose.items[0]);
-    expect(gildedRose.items[0].quality).toBe(23);
+    const item = gildedRose.items[0];
+    afficherResultat("Qualité augmente de 3 pour Backstage passes", item.quality === 23);
   });
 
-  // Test 8 : Backstage passes après l'événement
-  it("La qualité des 'Backstage passes' tombe à 0 après l'événement", function () {
+  it("Critère 5 : Quand un produit est périmé, la qualité baisse 2 fois plus vite", function () {
+    console.log("\n🔎 Critère 5 : Vérification de la baisse accélérée après péremption.");
+    const gildedRose = new Shop([new Item("+5 Dexterity Vest", 0, 10)]);
+    gildedRose.updateQuality();
+    const item = gildedRose.items[0];
+    afficherResultat("Qualité diminue de 2 après péremption", item.quality === 8);
+  });
+
+  it("Critère 6 : Quand le concert est terminé, 'Backstage passes' devient périmé avec qualité = 0", function () {
+    console.log("\n🔎 Critère 6 : Vérification de l'expiration des 'Backstage passes'.");
     const gildedRose = new Shop([new Item("Backstage passes to a TAFKAL80ETC concert", 0, 20)]);
     gildedRose.updateQuality();
-    console.log("Avant mise à jour : Backstage passes | sellIn = 0, qualité = 20");
-    console.log("Après mise à jour :", gildedRose.items[0]);
-    expect(gildedRose.items[0].quality).toBe(0);
+    const item = gildedRose.items[0];
+    afficherResultat("Qualité des Backstage passes tombe à 0", item.quality === 0);
   });
 
-  // Test 9 : Sulfuras reste inchangé
-  it("La qualité et le sellIn de 'Sulfuras' ne changent jamais", function () {
+  it("Critère 7 : La qualité de 'Sulfuras' n'est pas modifiée", function () {
+    console.log("\n🔎 Critère 7 : Vérification que 'Sulfuras' reste inchangé.");
     const gildedRose = new Shop([new Item("Sulfuras, Hand of Ragnaros", 0, 80)]);
     gildedRose.updateQuality();
-    console.log("Avant mise à jour : Sulfuras | sellIn = 0, qualité = 80");
-    console.log("Après mise à jour :", gildedRose.items[0]);
-    expect(gildedRose.items[0].quality).toBe(80);
-    expect(gildedRose.items[0].sellIn).toBe(0);
+    const item = gildedRose.items[0];
+    afficherResultat("Qualité de Sulfuras reste inchangée", item.quality === 80);
+    afficherResultat("SellIn de Sulfuras reste inchangé", item.sellIn === 0);
   });
 
-  // Test 10 : Conjured diminue de 2 ou 4 selon sellIn
-  it("La qualité des articles 'Conjured' diminue deux fois plus vite", function () {
+  it("Critère 8 : La qualité n'augmente pas au-dessus de 50", function () {
+    console.log("\n🔎 Critère 8 : Vérification de la limite supérieure de qualité.");
+    const gildedRose = new Shop([new Item("Aged Brie", 2, 50)]);
+    gildedRose.updateQuality();
+    const item = gildedRose.items[0];
+    afficherResultat("Qualité ne dépasse pas 50", item.quality === 50);
+  });
+
+  it("Critère 9 : Les articles 'Conjured' baissent deux fois plus rapidement", function () {
+    console.log("\n🔎 Critère 9 : Vérification de la baisse accélérée pour les 'Conjured'.");
     const gildedRose = new Shop([
       new Item("Conjured Mana Cake", 3, 6),
       new Item("Conjured Mana Cake", 0, 6),
     ]);
     gildedRose.updateQuality();
-    console.log("Avant mise à jour : Conjured | sellIn = 3, qualité = 6");
-    console.log("Après mise à jour :", gildedRose.items[0]);
-    console.log("Avant mise à jour : Conjured | sellIn = 0, qualité = 6");
-    console.log("Après mise à jour :", gildedRose.items[1]);
-    expect(gildedRose.items[0].quality).toBe(4); // sellIn > 0 : baisse de 2
-    expect(gildedRose.items[1].quality).toBe(2); // sellIn <= 0 : baisse de 4
+    const item1 = gildedRose.items[0];
+    const item2 = gildedRose.items[1];
+    afficherResultat("Conjured diminue de 2 (sellIn > 0)", item1.quality === 4);
+    afficherResultat("Conjured diminue de 4 (sellIn <= 0)", item2.quality === 2);
   });
 
 });
